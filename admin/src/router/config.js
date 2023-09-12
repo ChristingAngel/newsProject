@@ -6,6 +6,7 @@ import ProductAdd from '@/views/product-manage/ProductAdd.vue'
 import ProductList from '@/views/product-manage/ProductList.vue'
 import UserList from '@/views/user-manage/UserList.vue'
 import UserAdd from '@/views/user-manage/UserAdd.vue'
+import NotFound from '@/views/NotFound/Notfound.vue'
 const ruotes = [
     {
         path:'/index',
@@ -39,6 +40,15 @@ const ruotes = [
         path:'/user-manage/userlist',
         component:UserAdd
     },
+    {
+        path:'/',
+        redirect:'/index'
+    },
+    {
+        path:'/:pathMatch(.*)*',
+        name:'NotFound',
+        component:NotFound
+    }
 ]
 
 export default ruotes
