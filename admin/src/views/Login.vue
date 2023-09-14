@@ -4,8 +4,9 @@
             :options="options" />
 
         <div class="formCentainer">
+            <h3>企业门户网站管理系统</h3>
             <el-form ref="loginFormRef" :model="loginForm" status-icon :rules="loginRules" label-width="80px"
-                class="demo-ruleForm">
+                class="loginfrom">
                 <el-form-item label="用户名" prop="username">
                     <el-input v-model="loginForm.username" autocomplete="off" />
                 </el-form-item>
@@ -23,6 +24,12 @@
 <script setup>
 import { reactive,ref } from 'vue';
 import { loadFull } from 'tsparticles'
+import { useRouter } from 'vue-router';
+import { ElMessage } from 'element-plus'
+import { useStore } from 'vuex';
+import axios from 'axios'
+
+const store = useStore()
 
 const loginForm = reactive({
     username:'',
@@ -47,12 +54,34 @@ const loginRules = reactive({
     ],
 })
 
-const Login = () => {
-    localStorage.setItem('token', 'aaa')
-}
+const router = useRouter()
+
 //提交表单
 const submitForm = ()=>{
+    //校验表单 element内置方法
+    loginFormRef.value.validate((valid)=>{
+        // console.log(valid)
+        if (valid) {
+            // console.log(loginForm)
+            axios.post('/adminapi/user/login',loginForm).then(res=>{
+                console.log(res.data);
+                if(res.data.ActionType == 'OK'){
+                    console.log(res.data.data);
+                    store.commit('changeUserInfo',res.data.data)
+                    router.push('/index')
+                }else{
+                    ElMessage.error('用户名或密码错误')
+                }
+            }).catch(error=>{
+                console.log(error);
+            })
+            
+        }
+    })
+    //提交后台
 
+    //设置token
+    // localStorage.setItem('token', 'aaa')
 }
 
 
@@ -151,5 +180,15 @@ const options = {
     color: white;
     text-align: center;
     padding: 80px;
+    h3{
+        font-size: 30px;
+    }
+    .loginfrom{
+        margin-top: 30px;
+    }
+}
+
+::v-deep .el-form-item__label{
+    color: white;
 }
 </style>

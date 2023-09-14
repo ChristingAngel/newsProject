@@ -5,6 +5,7 @@ import store from './store'
 import ElementPlus from 'element-plus'
 import 'element-plus/dist/index.css'
 import particles from 'particles.vue3'
+import './util/axios.config'
 createApp(App)
 .use(ElementPlus)
 .use(particles)
