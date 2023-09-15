@@ -5,7 +5,9 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
-var UserRouter = require('./routes/UserRouter');
+var usersRouter = require('./routes/users');
+const UserRouter = require('./routes/admin/UserRouter');
+const JWT = require('./util/JWT');
 
 var app = express();
 
@@ -20,41 +22,37 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
-// app.use('/users', usersRouter);
+app.use('/users', usersRouter);
 
-
-/* 
-adminApi 后台接口
-webApi   官网接口
+/*
+ /adminapi/* - 后台系统用的
+ /webapi/* - 企业官网用的
 */
 app.use((req,res,next)=>{
-
-  //如果授权通过 next()
-  //如果过期 401
-  if (req.url==='/adminapi/user/login') {
+  // 如果token有效 ,next() 
+  // 如果token过期了, 返回401错误
+  if(req.url==="/adminapi/user/login"){
     next()
-    return
+    return;
   }
-  const token = req.headers['authorization'].split(' ')[1]
-  if (token) {
-    let payload = JWT.verify(token)
-    if (payload) {
+
+  const token = req.headers["authorization"].split(" ")[1]
+  if(token){
+    var payload = JWT.verify(token)
+    if(payload){
       const newToken = JWT.generate({
         _id:payload._id,
         username:payload.username
-      },"1d")
-      res.header('Authorization',newToken)
+      },"1h")
+      res.header("Authorization",newToken)
       next()
-    } else {
-      res.status(401).send({errCode:'-1',errorIfo:'token过期'})
+    }else{
+      res.status(401).send({errCode:"-1",errorInfo:"token过期"})
     }
   }
 })
+
 app.use(UserRouter)
-
-
-
-
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

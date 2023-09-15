@@ -32,8 +32,8 @@ import axios from 'axios'
 const store = useStore()
 
 const loginForm = reactive({
-    username:'',
-    password:''
+    username:'admin',
+    password:'123456'
 })
 
 const loginFormRef = ref()
