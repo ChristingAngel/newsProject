@@ -37,17 +37,63 @@ const UserController = {
         console.log(req.body,req.file)
         const {username,introduction,gender} = req.body
         const token = req.headers["authorization"].split(" ")[1]
-        const avatar = `/avataruploads/${req.file.filename}`
+        const avatar = req.file ? `/avataruploads/${req.file.filename}` : ''
         var payload = JWT.verify(token)
-        console.log(payload._id)
-        console.log(payload);
+        // console.log(payload._id)
+        // console.log(payload);
         //调用service 模块更新 数据
 
         await UserService.upload({_id:payload._id,username,introduction,gender:Number(gender),avatar})
+        if(avatar){
+            res.send({
+                ActionType:"OK",
+                data:{
+                    username,introduction,
+                    gender:Number(gender),
+                    avatar
+                }
+            })
+        }else{
+            res.send({
+                ActionType:"OK",
+                data:{
+                    username,introduction,
+                    gender:Number(gender)
+                }
+            })
+        }
+    },
+    add: async (req, res) => {
+        // console.log(req.body,req.file)
+        const { username, introduction, gender, role, password } = req.body
+        const avatar = req.file ? `/avataruploads/${req.file.filename}` : ""
+        await UserService.add({ username, introduction, gender: Number(gender), avatar, role: Number(role), password })
         res.send({
-            ActionType:"OK"
+            ActionType: "OK",
         })
-    }
+    },
+
+    getList: async (req, res) => {
+        const result = await UserService.getList(req.params)
+        res.send({
+            ActionType: "OK",
+            data: result
+        })
+    },
+    putList:async (req,res)=>{
+        const result = await UserService.putList(req.body)
+        res.send({
+            ActionType: "OK"
+        })
+    },
+    delList:async (req,res)=>{
+        // console.log(req.params.id)
+
+        const result = await UserService.delList({_id:req.params.id})
+        res.send({
+            ActionType: "OK"
+        })
+    }   
 }
 
 module.exports = UserController

@@ -54,6 +54,17 @@ import {useRoute} from 'vue-router'
 //当前匹配到的路由对象
 const route = useRoute()
 // console.log(route.fullPath);
+import {useStore } from 'vuex'
+// console.log()
+const store = useStore()
+const vAdmin = {
+    mounted(el){
+        // console.log(el)
+        if(store.state.userInfo.role!==1){
+            el.parentNode.removeChild(el)
+        }
+    }
+}
 </script>
 
 <style lang="scss" scoped>

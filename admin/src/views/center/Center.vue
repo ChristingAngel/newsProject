@@ -36,7 +36,8 @@
                                 action="https://run.mocky.io/v3/9d059bf9-4660-45f2-925d-ce80ad6c4d15"
                                 :show-file-list="false" :on-success="handleAvatarSuccess" :auto-upload="false"
                                 :on-change="handlerchange" :before-upload="beforeAvatarUpload">
-                                <img v-if="userForm.avatar" :src="userForm.avatar" class="avatar" />
+                                <img v-if="userForm.avatar" :src="uploadAvatar"
+                                    class="avatar" />
                                 <el-icon v-else class="avatar-uploader-icon">
                                     <Plus />
                                 </el-icon>
@@ -56,6 +57,7 @@
 import { useStore } from 'vuex';
 import { Plus } from '@element-plus/icons-vue'
 import { computed, reactive, ref } from 'vue';
+import { ElMessage } from "element-plus";
 import axios from 'axios';
 const store = useStore()
 const { username, gender, introduction, avatar } = store.state.userInfo
@@ -65,7 +67,7 @@ const userForm = reactive({
     gender,
     introduction,
     avatar,
-    file:null
+    file: null
 })
 
 const userFormrules = reactive({
@@ -101,7 +103,11 @@ const options = [
 
 
 const avatarUrl = computed(() => {
-    return store.state.userInfo.avatar ? store.state.userInfo.avatar : 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png'
+    return store.state.userInfo.avatar ? 'http://localhost:3000' + store.state.userInfo.avatar : 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png'
+})
+
+const uploadAvatar = computed(() => {
+    return userForm.avatar.includes('blob') ? userForm.avatar : 'http://localhost:3000'+userForm.avatar
 })
 
 const handlerchange = (file) => {
@@ -111,21 +117,25 @@ const handlerchange = (file) => {
     userForm.file = file.raw
 }
 //提交信息
-const submitForm = ()=>{
-    userFormRef.value.validate((valid)=>{
+const submitForm = () => {
+    userFormRef.value.validate((valid) => {
         if (valid) {
-            console.log('submit',userForm);
+            console.log('submit', userForm);
             const params = new FormData()
-            for(let i in userForm){
-                params.append(i,userForm[i])
+            for (let i in userForm) {
+                params.append(i, userForm[i])
             }
             console.log(userForm.file);
-            axios.post('/adminapi/user/upload',params,{
-                headers:{
-                    "Content-Type":"multipart/form-data"
+            axios.post('/adminapi/user/upload', params, {
+                headers: {
+                    "Content-Type": "multipart/form-data"
                 }
-            }).then(res=>{
+            }).then(res => {
                 console.log(res.data)
+                if (res.ActionType === "OK") {
+                    store.commit("changeUserInfo", res.data);
+                    ElMessage.success("更新成功");
+                }
             })
         }
     })
