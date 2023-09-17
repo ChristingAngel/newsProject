@@ -19,40 +19,62 @@ const routes = [
 ]
 
 const router = createRouter({
-  history: createWebHistory(process.env.BASE_URL),
+  history: createWebHashHistory(),
   routes
 })
 //每次路由跳转之前
-router.beforeEach((to,from,next)=>{
-  if (to.name==='login') {
+router.beforeEach((to, from, next) => {
+  if (to.name === "login") {
     next()
   } else {
-    //如果登录过 next()
-    //未登录 重定向login
-    if (!localStorage.getItem('token')) {
+    //如果授权(已经登录过了) next()
+    //未授权, 重定向到login
+    if (!localStorage.getItem("token")) {
       next({
-        path:'/login'
+        path: "/login"
       })
-    }else{
+    } else {
       if (!store.state.isGetterRouter) {
-        //第一次
-        ConfigRuoter()
+
+        //删除所有的嵌套路由
+        //mainbox
+        router.removeRoute("mainbox")
+
+        ConfigRouter()
         next({
-          path:to.fullPath
+          path: to.fullPath
         })
-      } else {
+      }else{
         next()
       }
     }
   }
 })
 
-const ConfigRuoter = ()=>{
-  Routesconfig.forEach(item=>{
-    router.addRoute('mainbox',item)
+const ConfigRouter = () => {
+
+  if(!router.hasRoute("mainbox")){
+    router.addRoute(  {
+      path: "/mainbox",
+      name: "mainbox",
+      component: MainBox
+    })
+  }
+
+  RoutesConfig.forEach(item => {
+    checkPermission(item) && router.addRoute("mainbox", item)
   })
-  //vuex中设置为true
-  store.commit('changeGetterRouter',true)
+
+  //改变isGetterRouter =  true
+
+  store.commit("changeGetterRouter",true)
+}
+
+const checkPermission = (item)=>{
+  if(item.requireAdmin){
+    return store.state.userInfo.role===1
+  }
+  return true
 }
 
 export default router
