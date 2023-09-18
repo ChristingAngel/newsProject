@@ -1,7 +1,7 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router'
 import Login from '../views/Login.vue'
 import MainBox from '../views/MainBox.vue'
-import Routesconfig from './config.js'
+import RoutesConfig from './config.js'
 import store from '../store/index'
 
 const routes = [
