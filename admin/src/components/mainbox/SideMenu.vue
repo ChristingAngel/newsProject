@@ -14,7 +14,7 @@
                 <span>个人中心</span>
             </el-menu-item>
 
-            <el-sub-menu index="/user-manage">
+            <el-sub-menu index="/user-manage" v-admin>
                 <template #title>
                     <el-icon>
                         <userFilled />
