@@ -9,6 +9,8 @@ var usersRouter = require('./routes/users');
 const UserRouter = require('./routes/admin/UserRouter');
 const JWT = require('./util/JWT');
 const NewsRouter = require('./routes/admin/NewsRouter');
+const NewsService = require('./routes/web/NewsRouter');
+const ProductService = require('./routes/web/ProductRouter');
 const ProductRouter = require('./routes/admin/ProductRouter');
 
 
@@ -26,6 +28,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+
+
+app.use(NewsService)
+app.use(ProductService)
 
 /*
  /adminapi/* - 后台系统用的
