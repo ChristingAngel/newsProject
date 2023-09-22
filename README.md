@@ -23,3 +23,6 @@ server提供接口，web为公司门户官网，admin为公司门户管理系统
 > npm i
 
 > npm run serve
+
+# 项目截图
+![示例图片](./web/src/assets/admin.png)
